@@ -1,6 +1,6 @@
 export const passangers = [
   {
-    id: 0,
+    id: "0",
     name: "Jane Lee",
     email: "jon.doe@gmail.com",
     phoneNumber: "0724986280"
@@ -9,7 +9,7 @@ export const passangers = [
 
 export const drivers = [
   {
-    id: 0,
+    id: "0",
     name: "Jon Doe",
     email: "jon.doe@gmail.com",
     phoneNumber: "0724986280"
@@ -18,9 +18,9 @@ export const drivers = [
 
 export const vehicles = [
   {
-    id: 0,
+    id: "0",
     licensePlate: "KDB 123Q",
     description: "White VW Polo",
-    driverId: 1
+    driverId: "1"
   }
 ]
