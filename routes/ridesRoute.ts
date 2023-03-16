@@ -1,5 +1,5 @@
 import { Router } from "express";
-import RideController from "../controllers/rideController.js";
+import RideController from "../controllers/rideController";
 
 const route = Router();
 
