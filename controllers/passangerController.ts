@@ -1,22 +1,24 @@
 import { Request, Response } from "express";
 import { passangers } from "../models/data";
+import { UserModel } from "../models/model";
 import { encryptPass } from "../services/commonUtils";
 import { User, ResponseType, Status } from "../types";
 
-
-export const createUser = (req: Request, res: Response<ResponseType>) => {
-  const reqbody: User = req.body;
+export const createUser = async (req: Request, res: Response<ResponseType>) => {
+  try {
+    const reqbody: User = req.body;
+    console.log(reqbody);
     // Hash Password
     reqbody.password = await encryptPass(reqbody.password);
 
-    // save driver in db
-    const newDriver = new DriverModel(reqbody);
-    await newDriver
+    // save user in db
+    const newUser = new UserModel(reqbody);
+    await newUser
       .save()
       .then((doc) => {
         res.status(201).json({
           status: Status.SUCCESS,
-          message: "Driver created successfully",
+          message: "User created successfully",
           data: doc,
         });
       })
@@ -24,7 +26,7 @@ export const createUser = (req: Request, res: Response<ResponseType>) => {
         console.log(err.message);
         res.status(400).json({
           status: Status.FAILURE,
-          message: "Failed to create driver",
+          message: "Failed to create user",
           errors: err.message,
         });
       });
