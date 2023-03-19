@@ -1,33 +1,71 @@
 import { Request, Response } from "express";
-import { DriverModel } from "../models";
+import { DriverModel } from "../models/model";
+import { encryptPass } from "../services/commonUtils";
 import { DriverRequest, ResponseType, Status } from "../types";
 
-export const createDriver = (req: Request, res: Response<ResponseType>) => {
-  const request: DriverRequest = req.body;
-  console.log(request);
+export const createDriver = async (
+  req: Request,
+  res: Response<ResponseType>
+) => {
+  try {
+    const reqbody: DriverRequest = req.body;
+    // Hash Password
+    reqbody.password = await encryptPass(reqbody.password);
 
-  let driver = new DriverModel(request);
-  driver
-    .save()
-    .then((doc) => {
-      res.status(201).send({
-        status: Status.SUCCESS,
-        message: "Driver created successfully",
-        data: doc,
+    // save driver in db
+    const newDriver = new DriverModel(reqbody);
+    await newDriver
+      .save()
+      .then((doc) => {
+        res.status(201).json({
+          status: Status.SUCCESS,
+          message: "Driver created successfully",
+          data: doc,
+        });
+      })
+      .catch((err) => {
+        console.log(err.message);
+        res.status(400).json({
+          status: Status.FAILURE,
+          message: "Failed to create driver",
+          errors: err.message,
+        });
       });
-    })
-    .catch((err) => {
-      console.log(err.message);
-      res.status(400).send({
-        status: Status.FAILURE,
-        message: "Failed to create driver",
-        errors: err.message,
-      });
+  } catch (err: any) {
+    console.error(err);
+    res.status(500).json({
+      status: Status.FAILURE,
+      message: "Internal server error",
+      errors: err,
     });
+  }
 };
 
-export const getDriver = (req: Request, res: Response) => {
-  res.send("Get Driver");
+export const getDriver = async (req: Request, res: Response<ResponseType>) => {
+  try {
+    const driverId = req.params.driverId;
+
+    // retrieve driver from db
+    const driver = await DriverModel.findById(driverId, "-password").lean();
+
+    if (!driver)
+      return res
+        .status(404)
+        .json({ status: Status.FAILURE, message: "Driver not found" });
+
+    res.status(200).json({
+      status: Status.SUCCESS,
+      message: "Retrieved Driver",
+      data: driver,
+    });
+  } catch (err: any) {
+    console.error(err);
+    res.status(400).json({
+      status: Status.FAILURE,
+      message: "Failure retrieving driver",
+      errors: err.message ? err.message : err,
+    });
+  }
 };
 
 export const editDriver = (req: Request, res: Response) => {
