@@ -1,15 +1,16 @@
-import express from "express";
-import passangersRoute from "./routes/passangersRoute";
-import ridesRoute from "./routes/ridesRoute";
-import driversRoute from "./routes/driversRoute";
-import db from "./database";
+import express, { Request, Response, Router } from "express";
+import PassangerRoutes from "./src/api/routes/passangersRoute";
+import DriverRoutes from "./src/api/routes/driversRoute";
+import RideRoutes from "./src/api/routes/ridesRoute";
+import db from "./src/config/database";
+import socketioConfig from "./src/config/socket.io";
 
 const app = express();
 
 app.use(express.json());
-app.use("/users", passangersRoute);
-app.use("/rides", ridesRoute);
-app.use("/drivers", driversRoute);
+app.use("/users", PassangerRoutes);
+app.use("/rides", RideRoutes);
+app.use("/drivers", DriverRoutes);
 
 main().catch((err) => console.log(err));
 
@@ -17,7 +18,13 @@ async function main() {
   await db;
 }
 
+// app.get("/", (request: Request, response: Response) => {
+//   response.sendFile(__dirname + "/frontend/socket.io.html");
+// });
+
+const httpServer = socketioConfig(app);
+
 const port = 3000;
-app.listen(port, () => {
+httpServer.listen(port, () => {
   console.log(`Listening on port http://localhost:${port}`);
 });

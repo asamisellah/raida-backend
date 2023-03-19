@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { DriverModel } from "../models/model";
 import { encryptPass } from "../services/commonUtils";
-import { DriverRequest, ResponseType, Status } from "../types";
+import { DriverRequest, ResponseType, Status } from "../../types/interfaces";
 
 export const createDriver = async (
   req: Request,
@@ -72,13 +72,25 @@ export const editDriver = (req: Request, res: Response) => {
   res.send("Edit driver details");
 };
 
-export const setDriverStatus = (req: Request, res: Response) => {
+export const setDriverStatus = async (req: Request, res: Response) => {
   // status in payload and map to an emum
   // Depending on status being set:
   // If available/standby, switch on GPS streaming and add to drivers queue
   // If in ride, GPS streaming is still on and remove from queue
   // If unavailable, switch off GPS streaming and remove from drivers queue
+  const status = req.body;
+  console.log(status);
+
+  const updatedStatus = await DriverModel.findByIdAndUpdate(
+    req.params.driverId,
+    status,
+    { new: true }
+  ).lean();
+
+  console.log("Status::: ", updatedStatus);
   res.send("Set driver status");
 };
+
+
 
 export default { createDriver, getDriver, editDriver, setDriverStatus };

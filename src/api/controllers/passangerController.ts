@@ -2,12 +2,12 @@ import { Request, Response } from "express";
 import { passangers } from "../models/data";
 import { UserModel } from "../models/model";
 import { encryptPass } from "../services/commonUtils";
-import { User, ResponseType, Status } from "../types";
+import { User, ResponseType, Status } from "../../types/interfaces";
 
 export const createUser = async (req: Request, res: Response<ResponseType>) => {
   try {
     const reqbody: User = req.body;
-    console.log(reqbody);
+    console.log("Inside user", reqbody);
     // Hash Password
     reqbody.password = await encryptPass(reqbody.password);
 

@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import RideController from "../controllers/rideController";
 
 const route = Router();
@@ -14,5 +14,7 @@ route.get("/:rideId/status", RideController.getRideStatus);
 route.get("/drivers/:driverId", RideController.getDriverRides);
 
 route.get("/users/:userId", RideController.getUserRides);
+
+const htmlRoute = Router();
 
 export default route;
