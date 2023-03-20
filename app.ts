@@ -4,8 +4,11 @@ import DriverRoutes from "./src/api/routes/driversRoute";
 import RideRoutes from "./src/api/routes/ridesRoute";
 import db from "./src/config/database";
 import socketioConfig from "./src/config/socket.io";
+import cors from "cors";
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 app.use("/users", PassangerRoutes);
@@ -18,9 +21,9 @@ async function main() {
   await db;
 }
 
-// app.get("/", (request: Request, response: Response) => {
-//   response.sendFile(__dirname + "/frontend/socket.io.html");
-// });
+app.get("/", (request: Request, response: Response) => {
+  response.sendFile(__dirname + "/frontend/socket.io.html");
+});
 
 const httpServer = socketioConfig(app);
 

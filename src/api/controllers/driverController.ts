@@ -9,11 +9,17 @@ export const createDriver = async (
 ) => {
   try {
     const reqbody: DriverRequest = req.body;
+    const { location, password } = reqbody;
     // Hash Password
-    reqbody.password = await encryptPass(reqbody.password);
+    const encPass = await encryptPass(password);
 
+    console.log("Request body", reqbody);
     // save driver in db
-    const newDriver = new DriverModel(reqbody);
+    const newDriver = new DriverModel({
+      ...reqbody,
+      password: encPass,
+      location: { coordinates: [location.longitude, location.latitude] },
+    });
     await newDriver
       .save()
       .then((doc) => {
@@ -90,7 +96,5 @@ export const setDriverStatus = async (req: Request, res: Response) => {
   console.log("Status::: ", updatedStatus);
   res.send("Set driver status");
 };
-
-
 
 export default { createDriver, getDriver, editDriver, setDriverStatus };

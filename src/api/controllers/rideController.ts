@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
+import { io } from "../../config/socket.io";
 import { findNearbyDrivers, RideRequestModel } from "../models/model";
 
 // env variable
 const maxDistance = 2000;
+
+// Passangers and drivers can only have one ride request at a time
 
 export const requestRide = async (req: Request, res: Response) => {
   // create ride
@@ -10,22 +13,13 @@ export const requestRide = async (req: Request, res: Response) => {
   // handle edge cases
   const { pickup } = req.body;
 
-  saveRide(req.body);
-  const driver = matchDriver(pickup);
-  // notify matched driver 
+  const rideRequest = await saveRide(req.body);
+  const matchedDriver = await matchDriver(pickup);
 
-
-  // we have a list of drivers for matching
-  // send out msg to the first driver
-  // put drivers in queue and then send message to each driver in order of the queue
-  // if driver accepts, we end the notifications sending
-  // if driver rejects, pop the item and select next item in the queue
+  console.log("MatchedDriver", matchedDriver);
 
   // todo: sending notification to driver
-
-  console.log("Drivers", driver);
-
-  res.send("Request Ride endpoint");
+  notifyDriver(matchedDriver, rideRequest, res);
 };
 
 export const getRide = (req: Request, res: Response) => {
@@ -53,7 +47,7 @@ const matchDriver = async (pickup: any) => {
     pickup.longitude,
     pickup.latitude,
     maxDistance,
-    { available: "standby" }
+    { availability: "available" }
   );
 
   return driver;
@@ -65,11 +59,44 @@ const saveRide = async (payload: any) => {
     .save()
     .then((doc) => {
       // Add debug log for success saving to DB
-      console.log(doc);
+      // console.log(doc);
     })
     .catch((err) => {
-      console.log(err);
+      // console.log(err);
     });
+};
+
+const notifyDriver = async (matchedDriver: any, rideRequest: any, res: any) => {
+  // if driver rejects, select the next driver in the queue
+  // if driver does not respond within 30 seconds, select the next driver in the queue
+  // if no driver accepts the ride request, we end the notifications sending and close the connection
+  // if driver accepts, we end the notifications sending and close the connection
+
+  io.on("connection", async (socket) => {
+    console.log(`Driver ${matchedDriver._id} connected to socket ${socket.id}`);
+
+    socket.emit("rideRequest", rideRequest);
+
+    socket.on("acceptRide", (socket) => {
+      // Update ride request status to accepted
+      console.log(`Driver ${matchedDriver._id} accepted ride request`);
+
+      res.sendStatus(200);
+    });
+
+    socket.on("rejectRide", () => {
+      // Update ride request status to accepted
+      console.log(`Driver ${matchedDriver._id} accepted ride request`);
+      res.sendStatus(404);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.log(`connect_error due to ${err.message}`);
+      err.disconnect();
+    });
+
+    // end connection
+  });
 };
 
 export default {

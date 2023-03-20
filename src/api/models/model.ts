@@ -19,12 +19,12 @@ const driverSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  licenseNumber: { type: String, required: true },
+  licenseNumber: { type: String },
   licensePlate: { type: String, unique: true, required: true },
   carModel: { type: String, required: true },
   carMake: { type: String, required: true },
   carDescription: String,
-  available: {
+  availability: {
     // rename to availability
     type: String,
     enum: ["unavailable", "matched", "in_ride", "available"],
@@ -86,13 +86,17 @@ export const findNearbyDrivers = async (
     ...options,
   };
 
-  const updateQuery = await DriverModel.updateMany({ available: true });
-
   // todo: many suitable drivers incase the first rejects request
-  const drivers = await DriverModel.findOne(query).lean();
-  return drivers;
+  const driver: any = await DriverModel.findOne(query).lean();
+  // update driver availability to matched
+  if (driver)
+    await DriverModel.findByIdAndUpdate(driver._id, {
+      availability: "available",
+    });
+  return driver;
 };
 
+// @ts-ignore
 export const DriverModel = mongoose.model("Driver", driverSchema);
 export const UserModel = mongoose.model("User", userSchema);
 export const RideRequestModel = mongoose.model(
