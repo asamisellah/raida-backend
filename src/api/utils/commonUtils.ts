@@ -1,5 +1,4 @@
 import bcrypt from "bcrypt";
-import { Status } from "../../types/interfaces";
 
 export const encryptPass = async (pass: String | any) => {
   if (!pass) return "";

@@ -1,4 +1,6 @@
 import * as yup from "yup";
+import { KENYAN_PHONE_NUMBER_REGEX } from "../../api/utils/constants";
+
 const driverSchema = yup.object().shape({
   name: yup.string().required(),
   email: yup.string().email().required(),

@@ -1,4 +1,5 @@
 import * as yup from "yup";
+import { KENYAN_PHONE_NUMBER_REGEX } from "../utils/constants";
 
 const userSchema = yup.object().shape({
   name: yup.string().required(),
