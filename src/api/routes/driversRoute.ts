@@ -1,11 +1,11 @@
 import { Router } from "express";
 import driverController from "../controllers/driverController";
+import validate from "../middlewares/validate.middlewares";
+import driverSchema from "../validations/driverValidations";
 
 const route = Router();
 
-route.post("/create", driverController.createDriver);
-
-route.post("/verify/:driverId", driverController.createDriver);
+route.post("/create", validate(driverSchema),driverController.createDriver);
 
 route.get("/:driverId", driverController.getDriver);
 

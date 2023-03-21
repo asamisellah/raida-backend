@@ -1,77 +1,45 @@
 import { Request, Response } from "express";
-import { DriverModel } from "../models/model";
-import { encryptPass } from "../services/commonUtils";
-import { DriverRequest, ResponseType, Status } from "../../types/interfaces";
+import { DriverModel } from "../models/driverModel";
+import { encryptPass, resPayloadBuilder } from "../utils/commonUtils";
+import { ResponseType, Status } from "../../types/interfaces";
+import driverService from "../services/driverService";
+import { DriverModelType } from "../../types/types";
+import { StatusCodes } from "http-status-codes";
 
-export const createDriver = async (
-  req: Request,
-  res: Response<ResponseType>
-) => {
-  try {
-    const reqbody: DriverRequest = req.body;
-    const { location, password } = reqbody;
-    // Hash Password
-    const encPass = await encryptPass(password);
+export const createDriver = async (req: Request, res: Response) => {
+  const { password } = req.body;
+  // Hash Password
+  const encPass = await encryptPass(password);
+  req.body.password = encPass;
 
-    console.log("Request body", reqbody);
-    // save driver in db
-    const newDriver = new DriverModel({
-      ...reqbody,
-      password: encPass,
-      location: { coordinates: [location.longitude, location.latitude] },
-    });
-    await newDriver
-      .save()
-      .then((doc) => {
-        res.status(201).json({
-          status: Status.SUCCESS,
-          message: "Driver created successfully",
-          data: doc,
-        });
-      })
-      .catch((err) => {
-        console.log(err.message);
-        res.status(400).json({
-          status: Status.FAILURE,
-          message: "Failed to create driver",
-          errors: err.message,
-        });
-      });
-  } catch (err: any) {
-    console.error(err);
-    res.status(500).json({
-      status: Status.FAILURE,
-      message: "Internal server error",
-      errors: err,
-    });
-  }
+  // save driver in db
+  driverService
+    .saveDriver(req.body)
+    .then((doc) =>
+      res
+        .status(StatusCodes.CREATED)
+        .send(resPayloadBuilder("Driver created successfully", doc, false))
+    )
+    .catch((err: Error) =>
+      res
+        .status(StatusCodes.CREATED)
+        .send(resPayloadBuilder("Could not create driver", err.message, true))
+    );
 };
 
-export const getDriver = async (req: Request, res: Response<ResponseType>) => {
-  try {
-    const driverId = req.params.driverId;
+export const getDriver = async (req: Request, res: Response) => {
+  const driverId = req.params.driverId;
 
-    // retrieve driver from db
-    const driver = await DriverModel.findById(driverId, "-password").lean();
+  const driver = await driverService.getDriver(driverId);
 
-    if (!driver)
-      return res
-        .status(404)
-        .json({ status: Status.FAILURE, message: "Driver not found" });
+  if (!driver)
+    return res
+      .status(404)
+      .send(resPayloadBuilder("Driver not found", {}, true));
 
-    res.status(200).json({
-      status: Status.SUCCESS,
-      message: "Retrieved Driver",
-      data: driver,
-    });
-  } catch (err: any) {
-    console.error(err);
-    res.status(400).json({
-      status: Status.FAILURE,
-      message: "Failure retrieving driver",
-      errors: err.message ? err.message : err,
-    });
-  }
+  return res
+    .status(200)
+    .send(resPayloadBuilder("Retrieved Driver", driver, false));
 };
 
 export const editDriver = (req: Request, res: Response) => {
@@ -79,22 +47,24 @@ export const editDriver = (req: Request, res: Response) => {
 };
 
 export const setDriverStatus = async (req: Request, res: Response) => {
-  // status in payload and map to an emum
-  // Depending on status being set:
-  // If available/standby, switch on GPS streaming and add to drivers queue
-  // If in ride, GPS streaming is still on and remove from queue
-  // If unavailable, switch off GPS streaming and remove from drivers queue
-  const status = req.body;
-  console.log(status);
+  /** Status in payload and map to an emum
+      Depending on status being set:
+      If available/standby, switch on GPS streaming and add to drivers queue
+      If in ride, GPS streaming is still on and remove from queue
+      If unavailable, switch off GPS streaming and remove from drivers queue
+  */
+  const driverId = req.params.driverId;
 
-  const updatedStatus = await DriverModel.findByIdAndUpdate(
-    req.params.driverId,
-    status,
-    { new: true }
-  ).lean();
-
-  console.log("Status::: ", updatedStatus);
-  res.send("Set driver status");
+  const updatedStatus = await driverService
+    .updateAvailability(req.body, driverId)
+    .then((doc) => {
+      return res
+        .status(StatusCodes.OK)
+        .send(resPayloadBuilder("Status updated", doc, false));
+    })
+    .catch((err: Error) => {
+      resPayloadBuilder("Could not update status", err.message, true);
+    });
 };
 
 export default { createDriver, getDriver, editDriver, setDriverStatus };
