@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
-import { passangers } from "../models/data";
-import { UserModel } from "../models/model";
-import { encryptPass } from "../services/commonUtils";
+import { UserModel } from "../models/passangerModel";
+import { encryptPass } from "../utils/commonUtils";
 import { User, ResponseType, Status } from "../../types/interfaces";
 
-export const createUser = async (req: Request, res: Response<ResponseType>) => {
+export const createUser = async (req: Request, res: Response) => {
   try {
     const reqbody: User = req.body;
     console.log("Inside user", reqbody);
@@ -40,11 +39,7 @@ export const createUser = async (req: Request, res: Response<ResponseType>) => {
   }
 };
 
-export const getUser = (req: Request, res: Response) => {
-  const user = passangers.filter((user) => user.id === req.params.userId);
-  console.log(passangers);
-  res.status(200).send(user);
-};
+export const getUser = (req: Request, res: Response) => {};
 
 export const editUser = (req: Request, res: Response) => {
   res.send("Edit User endpoint");

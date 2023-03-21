@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { io } from "../../config/socket.io";
-import { findNearbyDrivers, RideRequestModel } from "../models/model";
+import { RideRequestModel } from "../models/rideModel";
+import { findNearbyDrivers } from "../services/rideService";
 
 // env variable
 const maxDistance = 2000;

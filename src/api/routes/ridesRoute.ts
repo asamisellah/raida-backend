@@ -1,9 +1,11 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import RideController from "../controllers/rideController";
+import validate from "../middlewares/validate.middlewares";
+import rideSchema from "../validations/rideValidations";
 
 const route = Router();
 
-route.post("/request", RideController.requestRide);
+route.post("/request", validate(rideSchema), RideController.requestRide);
 
 route.get("/:rideId", RideController.getRide);
 

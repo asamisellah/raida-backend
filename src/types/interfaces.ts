@@ -2,10 +2,11 @@ export interface User {
   name: string;
   email: string;
   password: string;
+  username: string;
   phoneNumber: string;
 }
 
-export interface DriverRequest extends User {
+export interface Driver extends User {
   location: Location;
   carMake: string;
   carModel: string;
@@ -26,10 +27,6 @@ export interface ResponseType {
 }
 
 interface Location {
-  address: string;
-  longitude: string;
-  latitude: string;
+  longitude: number;
+  latitude: number;
 }
-
-
-

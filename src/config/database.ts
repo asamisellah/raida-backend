@@ -1,14 +1,7 @@
 import mongoose from "mongoose";
 
 // env variables
-const atlasServer = "41.80.114.50/32";
-const server = "127.0.0.1:27017";
-const database = "raida";
-const user = "admin";
-const password = "adCd84bJmcsGcY7e";
-
-const atlasConn = `mongodb://${user}:${password}@${atlasServer}/${database}`;
-const localConn = `mongodb://${server}/${database}`;
+console.log(process.env.DB_CONNECTION_UR);
 
 class Database {
   constructor() {
@@ -17,7 +10,7 @@ class Database {
 
   _connect() {
     mongoose
-      .connect(localConn)
+      .connect("mongodb://admin:root@127.0.0.1:27017/raida")
       .then(() => {
         console.log("Database connection successful");
       })
