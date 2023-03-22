@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-const locationSchema = yup.object().shape({
+export const locationSchema = yup.object().shape({
   longitude: yup.number().required(),
   latitude: yup.number().required(),
 });

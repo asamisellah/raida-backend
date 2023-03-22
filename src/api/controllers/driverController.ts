@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { DriverModel } from "../models/driverModel";
-import { encryptPass, resPayloadBuilder } from "../utils/commonUtils";
+import { encryptPass, resBodyBuilder } from "../utils/commonUtils";
 import { ResponseType, Status } from "../../types/interfaces";
 import driverService from "../services/driverService";
 import { DriverModelType } from "../../types/types";
@@ -18,12 +18,12 @@ export const createDriver = async (req: Request, res: Response) => {
     .then((doc) =>
       res
         .status(StatusCodes.CREATED)
-        .send(resPayloadBuilder("Driver created successfully", doc, false))
+        .send(resBodyBuilder("Driver created successfully", doc, false))
     )
     .catch((err: Error) =>
       res
         .status(StatusCodes.CREATED)
-        .send(resPayloadBuilder("Could not create driver", err.message, true))
+        .send(resBodyBuilder("Could not create driver", err.message, true))
     );
 };
 
@@ -35,11 +35,11 @@ export const getDriver = async (req: Request, res: Response) => {
   if (!driver)
     return res
       .status(404)
-      .send(resPayloadBuilder("Driver not found", {}, true));
+      .send(resBodyBuilder("Driver not found", {}, true));
 
   return res
     .status(200)
-    .send(resPayloadBuilder("Retrieved Driver", driver, false));
+    .send(resBodyBuilder("Retrieved Driver", driver, false));
 };
 
 export const editDriver = (req: Request, res: Response) => {
@@ -60,10 +60,10 @@ export const setDriverStatus = async (req: Request, res: Response) => {
     .then((doc) => {
       return res
         .status(StatusCodes.OK)
-        .send(resPayloadBuilder("Status updated", doc, false));
+        .send(resBodyBuilder("Status updated", doc, false));
     })
     .catch((err: Error) => {
-      resPayloadBuilder("Could not update status", err.message, true);
+      resBodyBuilder("Could not update status", err.message, true);
     });
 };
 
