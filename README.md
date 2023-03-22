@@ -1,12 +1,45 @@
 # raida-backend
-Run apache kafka
-docker-compose up -d
 
-run command to setup kafka topic
-docker exec -it kafka /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic update-location --partitions 1 \
-  --replication-factor 1
+RAIDA is a ride sharing application designed to onboard drivers, enable customers to make ride requests and efficiently match a driver to a rider.
 
-start consumer-service
+## Technology
 
+Raida BE app is build using the following tools:
+NodeJS
 
-Start the app locally
+ExpressJs
+
+Typescript
+
+Socket.io
+
+MongoDB
+
+Mongoose
+
+## Run
+
+The following instructions outline how to start the backend service and get it running locally.
+
+### Requirements
+
+- NodeJS version `v18.15.0`
+- MongoDB installed. You can install MongoDB Compass as GUI for MongoDB
+
+Install dependencies:
+
+`npm install`
+
+Build and start the app locally:
+
+`npm start`
+
+Development
+
+`npm run dev`
+
+## Testing
+
+Run test and coverage report:
+
+`npm test`
