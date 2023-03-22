@@ -4,7 +4,7 @@ import { DriverModel as model } from "../models/driverModel";
 async function saveDriver(driver: Driver) {
   const { location } = driver;
   // save driver in db
-  await model.create({
+  return await model.create({
     ...driver,
     location: { coordinates: [location.longitude, location.latitude] },
   });

@@ -1,4 +1,4 @@
-import { encryptPass, resPayloadBuilder } from "../api/utils/commonUtils";
+import { encryptPass, resBodyBuilder } from "../api/utils/commonUtils";
 import bcrypt from "bcrypt";
 
 describe("Utils test", () => {
@@ -12,15 +12,16 @@ describe("Utils test", () => {
   it("should create response payload for success response", () => {
     const message = "Successfully created user";
     const data = { name: "John Doe" };
-    const expected = {message ,data};
-    const resPayload = resPayloadBuilder(message, data, false);
+    const expected = { message, data };
+    const resPayload = resBodyBuilder(message, data, false);
     expect(resPayload).toEqual(expected);
   });
   it("should create response payload for error response", () => {
     const message = "Failed to create user";
-    const data = { name: "John Doe" };
+    const data = { text: "Value missing" };
     const expected = { message, errors: data };
-    const resPayload = resPayloadBuilder(message, data, true);
+    const resPayload = resBodyBuilder(message, data, true);
     expect(resPayload).toEqual(expected);
+    expect(resPayload.errors).toBe(data);
   });
 });

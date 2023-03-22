@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 // env variables
-console.log(process.env.DB_CONNECTION_UR);
 
 class Database {
   constructor() {
