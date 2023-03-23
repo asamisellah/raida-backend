@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import db from "./src/config/database";
 import makeApp from "./index";
 
