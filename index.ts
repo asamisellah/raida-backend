@@ -4,17 +4,12 @@ import DriverRoutes from "./src/api/routes/driversRoute";
 import RideRoutes from "./src/api/routes/ridesRoute";
 import socketioConfig from "./src/config/socket.io";
 import cors from "cors";
-import dotenv from "dotenv";
-import path from "path";
 
 export default function makeApp(database: any) {
   // express app
   const app = express();
 
   const db = database;
-
-  // env
-  dotenv.config({ path: path.resolve(__dirname, "./.env") });
 
   // cors
   app.use(cors());

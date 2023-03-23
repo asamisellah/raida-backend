@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-// env variables
+const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME } = process.env;
 
 class Database {
   constructor() {
@@ -9,7 +9,9 @@ class Database {
 
   _connect() {
     mongoose
-      .connect("mongodb://admin:root@127.0.0.1:27017/raida")
+      .connect(
+        `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`
+      )
       .then(() => {
         console.log("Database connection successful");
       })
