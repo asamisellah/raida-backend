@@ -30,3 +30,9 @@ interface Location {
   longitude: number;
   latitude: number;
 }
+
+export interface Ride {
+  pickup: Location;
+  destination: Location;
+  passangerId: string;
+}

@@ -30,4 +30,6 @@ const driverSchema = new mongoose.Schema({
   },
 });
 
+driverSchema.index({ location: "2dsphere" });
+
 export const DriverModel = mongoose.model("Driver", driverSchema);

@@ -22,7 +22,7 @@ export const createDriver = async (req: Request, res: Response) => {
     )
     .catch((err: Error) =>
       res
-        .status(StatusCodes.CREATED)
+        .status(StatusCodes.BAD_REQUEST)
         .send(resBodyBuilder("Could not create driver", err.message, true))
     );
 };
@@ -33,9 +33,7 @@ export const getDriver = async (req: Request, res: Response) => {
   const driver = await driverService.getDriver(driverId);
 
   if (!driver)
-    return res
-      .status(404)
-      .send(resBodyBuilder("Driver not found", {}, true));
+    return res.status(404).send(resBodyBuilder("Driver not found", {}, true));
 
   return res
     .status(200)

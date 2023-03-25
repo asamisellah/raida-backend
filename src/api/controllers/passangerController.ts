@@ -6,7 +6,6 @@ import { User, ResponseType, Status } from "../../types/interfaces";
 export const createUser = async (req: Request, res: Response) => {
   try {
     const reqbody: User = req.body;
-    console.log("Inside user", reqbody);
     // Hash Password
     reqbody.password = await encryptPass(reqbody.password);
 
