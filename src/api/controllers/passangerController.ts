@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { UserModel } from "../models/passangerModel";
-import { encryptPass } from "../utils/commonUtils";
+import { encryptPass, resBodyBuilder } from "../utils/commonUtils";
 import { User, ResponseType, Status } from "../../types/interfaces";
+import { StatusCodes } from "http-status-codes";
 
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -14,27 +15,21 @@ export const createUser = async (req: Request, res: Response) => {
     await newUser
       .save()
       .then((doc) => {
-        res.status(201).json({
-          status: Status.SUCCESS,
-          message: "User created successfully",
-          data: doc,
-        });
+        res
+          .status(StatusCodes.CREATED)
+          .send(resBodyBuilder("User created successfully", doc, false));
       })
       .catch((err) => {
         console.log(err.message);
-        res.status(400).json({
-          status: Status.FAILURE,
-          message: "Failed to create user",
-          errors: err.message,
-        });
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .send(resBodyBuilder("Failed to create user", err.message, true));
       });
   } catch (err: any) {
     console.error(err);
-    res.status(500).json({
-      status: Status.FAILURE,
-      message: "Internal server error",
-      errors: err,
-    });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send(resBodyBuilder("Internal server error", err, true));
   }
 };
 
