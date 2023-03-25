@@ -6,7 +6,7 @@ export const locationSchema = yup.object().shape({
 });
 
 const rideSchema = yup.object().shape({
-  userId: yup.string().required(),
+  passangerId: yup.string().required(),
   pickup: locationSchema.required(),
   destination: locationSchema.required(),
 });
